@@ -1,0 +1,24 @@
+[
+  {
+    "id": 201,
+    "item_id": 104,
+    "item_name": "Navy Blue Hydro Flask (32oz)",
+    "claimant_email": "student@campus.edu",
+    "claimant_name": "Alex Johnson",
+    "proof_details": "Bottle has a Yosemite National Park sticker with a tiny dent on the lower rim. I can identify all stickers.",
+    "status": "Approved",
+    "admin_notes": "Verified sticker description with item at Security Desk. Ready for pickup.",
+    "created_at": "2026-10-02 11:20"
+  },
+  {
+    "id": 202,
+    "item_id": 105,
+    "item_name": "AirPods Pro (2nd Gen) in Black Case",
+    "claimant_email": "student@campus.edu",
+    "claimant_name": "Alex Johnson",
+    "proof_details": "My iPhone name is \"Alex Johnson Airpods\" and pairs automatically. Case has carabiner ring.",
+    "status": "Pending",
+    "admin_notes": "Under review by staff. Awaiting Bluetooth pairing confirmation.",
+    "created_at": "2026-10-02 18:40"
+  }
+]

@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Item Details - Campus Lost and Found</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="navbarContainer"></div>
+
+<main class="py-4">
+  <div class="container py-3" id="itemDetailContainer">
+    <!-- Populated by JavaScript -->
+  </div>
+</main>
+
+<div id="footerContainer"></div>
+
+<!-- Claim Modal -->
+<div class="modal fade" id="claimModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-shield-check me-1"></i> Submit Ownership Claim
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="claimSubmitForm">
+        <div class="modal-body p-4">
+          <p class="small text-muted mb-3">
+            To prevent fraudulent claims, describe identifying details that only the rightful owner would know (e.g. lock-screen wallpaper, specific scratches, unique serial number or contents).
+          </p>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Item being claimed</label>
+            <input type="text" class="form-control bg-light" id="modalItemTitle" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="proofDetails" class="form-label fw-semibold small">Proof / Ownership Details <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="proofDetails" rows="4" placeholder="Describe identifying features, serial numbers, sticker placements, device color, or passcode verification..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success fw-semibold">
+            <i class="bi bi-send me-1"></i> Submit Claim
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="app.js"></script>
+<script>
+  renderNavbar('search');
+  renderFooter();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const itemId = parseInt(urlParams.get('id') || '101', 10);
+  const allItems = getItems();
+  const item = allItems.find(i => i.id === itemId);
+
+  const container = document.getElementById('itemDetailContainer');
+
+  if (!item) {
+    container.innerHTML = `
+      <div class="card p-5 text-center border-0 shadow-sm">
+        <div class="text-danger mb-3"><i class="bi bi-exclamation-circle fs-1"></i></div>
+        <h4 class="fw-bold">Item Not Found</h4>
+        <p class="text-muted small">The requested item record does not exist or has been removed.</p>
+        <div><a href="search.html" class="btn btn-primary btn-sm">Return to Search Board</a></div>
+      </div>
+    `;
+  } else {
+    document.getElementById('modalItemTitle').value = item.name;
+
+    container.innerHTML = `
+      <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="search.html">Search Items</a></li>
+          <li class="breadcrumb-item active">${item.name}</li>
+        </ol>
+      </nav>
+
+      <div id="claimAlert"></div>
+
+      <div class="row g-4">
+        <!-- Photo Column -->
+        <div class="col-lg-5">
+          <div class="card shadow-sm border-0 overflow-hidden">
+            <img src="${item.photo}" alt="${item.name}" class="img-fluid w-100" style="max-height: 420px; object-fit: cover;">
+            <div class="card-body bg-light p-3 text-center border-top">
+              <span class="badge ${item.type === 'Found' ? 'badge-found' : 'badge-lost'} px-3 py-2 fs-6">
+                <i class="bi ${item.type === 'Found' ? 'bi-check2' : 'bi-question'} me-1"></i> ${item.type} Item
+              </span>
+              <span class="badge bg-secondary px-3 py-2 fs-6 ms-2">${item.status}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="col-lg-7">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4 p-md-5 d-flex flex-column">
+
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill fw-semibold">
+                  <i class="bi bi-tag-fill me-1"></i> ${item.category}
+                </span>
+                <span class="small text-muted"><i class="bi bi-clock me-1"></i> Reported: ${item.created_at || 'Recently'}</span>
+              </div>
+
+              <h2 class="fw-bold text-dark mb-3">${item.name}</h2>
+
+              <div class="bg-light p-3 rounded-3 mb-4 border">
+                <div class="row g-3">
+                  <div class="col-sm-6">
+                    <span class="text-muted small d-block">
+                      <i class="bi bi-calendar-check me-1"></i> Date ${item.type === 'Found' ? 'Found' : 'Lost'}:
+                    </span>
+                    <strong class="text-dark">${item.date}</strong>
+                  </div>
+                  <div class="col-sm-6">
+                    <span class="text-muted small d-block">
+                      <i class="bi bi-geo-alt-fill text-danger me-1"></i> Campus Location:
+                    </span>
+                    <strong class="text-dark">${item.location}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <h5 class="fw-bold text-dark mb-2">Description</h5>
+                <p class="text-secondary" style="white-space: pre-line; line-height: 1.6;">
+                  ${item.description}
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h6 class="fw-bold text-secondary text-uppercase small">Current Status</h6>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-warning text-dark px-3 py-2">
+                    <i class="bi bi-info-circle me-1"></i> ${item.status}
+                  </span>
+                  <span class="small text-muted">Recorded by campus community</span>
+                </div>
+              </div>
+
+              <!-- Action Area -->
+              <div class="mt-auto pt-3 border-top">
+                ${item.type === 'Found' ? `
+                  <button type="button" class="btn btn-success px-4 py-2 fw-semibold shadow-sm me-2" data-bs-toggle="modal" data-bs-target="#claimModal">
+                    <i class="bi bi-shield-check me-1"></i> Claim This Item
+                  </button>
+                ` : `
+                  <a href="report-found.html" class="btn btn-outline-success px-4 py-2 fw-semibold me-2">
+                    <i class="bi bi-check2-circle me-1"></i> I Found This Item!
+                  </a>
+                `}
+                <a href="search.html" class="btn btn-outline-secondary px-3 py-2">Back to Search</a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Auto open modal if #claim is in url
+    if (window.location.hash === '#claim' && item.type === 'Found') {
+      const modal = new bootstrap.Modal(document.getElementById('claimModal'));
+      modal.show();
+    }
+  }
+
+  // Handle claim submission
+  document.getElementById('claimSubmitForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const user = getCurrentUser() || { email: 'student@campus.edu', name: 'Alex Johnson' };
+    const proof = document.getElementById('proofDetails').value.trim();
+
+    const claims = getClaims();
+    const newClaim = {
+      id: Date.now(),
+      item_id: item.id,
+      item_name: item.name,
+      claimant_email: user.email,
+      claimant_name: user.name,
+      proof_details: proof,
+      status: 'Pending',
+      admin_notes: 'Under review by security staff.',
+      created_at: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    };
+    claims.unshift(newClaim);
+    saveClaims(claims);
+
+    // Add notif
+    const notifs = getNotifs();
+    notifs.unshift({
+      id: Date.now() + 1,
+      user_email: user.email,
+      title: 'Claim Submitted',
+      message: `Your claim for "${item.name}" has been received and is under review.`,
+      type: 'info',
+      created_at: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    });
+    saveNotifs(notifs);
+
+    // Close modal
+    const modalEl = document.getElementById('claimModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+
+    document.getElementById('claimAlert').innerHTML = `
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> Your claim has been submitted successfully! Check "My Claims" to monitor review status.
+        <div class="mt-2">
+          <a href="claims.html" class="btn btn-sm btn-success me-2">View My Claims</a>
+          <a href="dashboard.html" class="btn btn-sm btn-outline-success">Go to Dashboard</a>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    `;
+  });
+</script>
+</body>
+</html>
+
