@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "user_email": "student@campus.edu",
+    "title": "Claim Approved!",
+    "message": "Your claim for \"Navy Blue Hydro Flask (32oz)\" was approved. Please collect it from the Campus Security Office.",
+    "type": "success",
+    "created_at": "2026-10-02 14:15"
+  },
+  {
+    "id": 2,
+    "user_email": "student@campus.edu",
+    "title": "Claim Under Review",
+    "message": "Staff is currently verifying your claim for \"AirPods Pro (2nd Gen)\".",
+    "type": "info",
+    "created_at": "2026-10-02 18:45"
+  },
+  {
+    "id": 3,
+    "user_email": "student@campus.edu",
+    "title": "Lost Item Published",
+    "message": "Your report for \"MacBook Air M2\" has been published to the campus search board.",
+    "type": "primary",
+    "created_at": "2026-09-28 14:30"
+  }
+]

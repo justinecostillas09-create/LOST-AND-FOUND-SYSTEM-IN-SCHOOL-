@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Campus Administrator",
+    "email": "admin@campus.edu",
+    "password": "admin123",
+    "role": "Admin"
+  },
+  {
+    "id": 2,
+    "name": "Security Office Staff",
+    "email": "staff@campus.edu",
+    "password": "staff123",
+    "role": "Staff"
+  },
+  {
+    "id": 3,
+    "name": "Alex Johnson",
+    "email": "student@campus.edu",
+    "password": "student123",
+    "role": "User"
+  }
+]
